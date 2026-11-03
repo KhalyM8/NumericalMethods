@@ -33,78 +33,78 @@ def solve2DLaplace(nVariables, dx = 1, dy=1, top=0,bottom=0,left=0,right=0, nRow
 
     Boundaries = {"top":[],"bottom":[],"left":[],"right":[]}
 
-    def Create_Matrix_2D_Laplace(nVariables, nRows, nRowElements, Boundaries):
+    def Create_Matrix_2D_Laplace(nVariables,dx,dy, nRows, nRowElements, Boundaries):
         matrix = np.zeros((nVariables,nVariables))
         for i in range(nVariables):
             print(i)
-            matrix[i][i] = 4 #Own Tile
+            matrix[i][i] = 4*(dx**2+dy**2) #Own Tile
             if i < nRowElements: #hugging top wall
                 Boundaries["top"].append(i)
-                matrix[i][i+(nRowElements)] = -1 #Below
+                matrix[i][i+(nRowElements)] = -2*dx**2 #Below
                 if i % nRowElements == 0: # hugging left wall
                     Boundaries["left"].append(i)
-                    matrix[i][i+1] = -1 #To the right
+                    matrix[i][i+1] = -2*dy**2 #To the right
                     continue
                 if (i+1) %nRowElements == 0: #Hugging right wall
                     Boundaries["right"].append(i)
-                    matrix[i][i-1] = -1 #To the left
+                    matrix[i][i-1] = -2*dy**2 #To the left
                     continue
-                matrix[i][i+1] = -1 #To the right
-                matrix[i][i-1] = -1 #To the left
+                matrix[i][i+1] = -2*dy**2 #To the right
+                matrix[i][i-1] = -2*dy**2 #To the left
                 continue
             if i >= (nRows-1)*nRowElements: #Hugging Bottom Wall
                 Boundaries["bottom"].append(i)
-                matrix[i][i-(nRowElements)] = -1 #Above
+                matrix[i][i-(nRowElements)] = -2*dx**2 #Above
                 if i % nRowElements == 0: # hugging left wall
                     Boundaries["left"].append(i)
-                    matrix[i][i+1] = -1 #To the right
+                    matrix[i][i+1] = -2*dy**2 #To the right
                     continue
                 if (i+1) %nRowElements == 0: #Hugging right wall
                     Boundaries["right"].append(i)
-                    matrix[i][i-1] = -1 #To the left
+                    matrix[i][i-1] = -2*dy**2 #To the left
                     continue
-                matrix[i][i+1] = -1 #To the right
-                matrix[i][i-1] = -1 #To the left   
+                matrix[i][i+1] = -2*dy**2 #To the right
+                matrix[i][i-1] = -2*dy**2 #To the left   
                 continue 
             if (i+1) %nRowElements == 0: #Hugging right wall
                 Boundaries["right"].append(i)
-                matrix[i][i-1] = -1 #To the left
-                matrix[i][i-(nRowElements)] = -1 #Above
-                matrix[i][i+(nRowElements)] = -1 #Below
+                matrix[i][i-1] = -2*dy**2 #To the left
+                matrix[i][i-(nRowElements)] = -2*dx**2  #Above
+                matrix[i][i+(nRowElements)] = -2*dx**2  #Below
                 continue
             if i % nRowElements == 0: # hugging left wall
                 Boundaries["left"].append(i)
-                matrix[i][i-(nRowElements)] = -1 #Above
-                matrix[i][i+(nRowElements)] = -1 #Below
-                matrix[i][i+1] = -1 #To the right  
+                matrix[i][i-(nRowElements)] = -2*dx**2  #Above
+                matrix[i][i+(nRowElements)] = -2*dx**2  #Below
+                matrix[i][i+1] = -2*dy**2 #To the right  
                 continue
             
-            matrix[i][i-1] = -1 #To the left
-            matrix[i][i-(nRowElements)] = -1 #Above
-            matrix[i][i+(nRowElements)] = -1 #Below
-            matrix[i][i+1] = -1 #To the right 
+            matrix[i][i-1] = -2*dy**2 #To the left
+            matrix[i][i-(nRowElements)] = -2*dx**2  #Above
+            matrix[i][i+(nRowElements)] = -2*dx**2  #Below
+            matrix[i][i+1] = -2*dy**2 #To the right 
 
         return matrix
     
-    def Create_B_Vector(top,bottom,left,right,Boundaries):
+    def Create_B_Vector(top,dy,dx,bottom,left,right,Boundaries):
         B = np.zeros(nVariables)
         for i in Boundaries["top"]:
-            B[i] += top
+            B[i] += top*2*dx**2
         for i in Boundaries["bottom"]:
-            B[i] += bottom
+            B[i] += bottom*2*dx**2
         for i in Boundaries["left"]:
-            B[i] += left
+            B[i] += left*2*dy**2
         for i in Boundaries["right"]:
-            B[i] += right
+            B[i] += right*2*dy**2
         return B
 
     
-    A=Create_Matrix_2D_Laplace(nVariables,nRows,nRowElements, Boundaries)
-    B = Create_B_Vector(top,bottom,left,right,Boundaries)
+    A=Create_Matrix_2D_Laplace(nVariables,dx,dy,nRows,nRowElements, Boundaries)
+    B = Create_B_Vector(top,dy,dx,bottom,left,right,Boundaries)
     u = np.linalg.inv(A) @ B
     print(Boundaries)
-    #print(A)
-    #print(B)
+    print(A)
+    print(u)
     return u
 
 #solve2DLaplace(12, top=100,bottom=0,left=20,right=40, nCols=4,nRows=3)

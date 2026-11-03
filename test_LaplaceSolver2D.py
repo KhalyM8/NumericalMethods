@@ -16,4 +16,8 @@ def test_solver():
     33.61199455, 40.99651673, 43.79221566, 43.28941390,
     18.54391255, 20.56365564, 22.71419327, 26.50090179,
 ])) #More Columns than Rows Test
-
+    assert np.allclose(solve2DLaplace(9,dx=0.1,dy=0.2, top=100,bottom=0,left=20,right=40, nCols=3,nRows=3), np.array([
+    40.38968758, 49.18651363, 49.36927942,
+    27.15082130, 32.82926829, 36.94673967,
+    19.80145229, 22.71592539, 28.78104412,
+])) #Unequal Spacings Test
